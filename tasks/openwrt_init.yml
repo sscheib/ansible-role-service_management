@@ -1,0 +1,27 @@
+---
+- name: 'Ensure openwrt_init services are defined properly'
+  ansible.builtin.assert:
+    that:
+      # _service.pattern
+      - '(_service.pattern is defined) | ternary(_service.pattern | default(None) is string, true)'
+      - '(_service.pattern is defined) | ternary(_service.pattern | default(None) != None, true)'
+      - "(_service.pattern is defined) | ternary(_service.pattern | default(None) != '', true)"
+
+    success_msg: 'Services are defined correctly'
+    fail_msg: 'One or more services failed to validated correctly'
+    quiet: '{{ _svm_quiet_assert }}'
+  loop: '{{ _svm_services }}'
+  loop_control:
+    loop_var: '_service'
+
+- name: 'Ensure openwrt_init services have the desired configuration and state'
+  community.general.openwrt_init:
+    name: '{{ _service.name | default(omit) }}'
+    state: '{{ _service.state | default(omit) }}'
+    enabled: '{{ _service.enabled | default(omit) }}'
+    pattern: '{{ _service.pattern | default(omit) }}'
+  become: true
+  loop: '{{ _svm_services }}'
+  loop_control:
+    loop_var: '_service'
+...

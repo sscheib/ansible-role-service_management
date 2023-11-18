@@ -1,0 +1,48 @@
+---
+- name: 'Ensure services are defined properly'
+  ansible.builtin.assert:
+    that:
+      # _service.arguments
+      - '(_service.arguments is defined) | ternary(_service.arguments | default(None) is string, true)'
+      - '(_service.arguments is defined) | ternary(_service.arguments | default(None) != None, true)'
+      - "(_service.arguments is defined) | ternary(_service.arguments | default(None) != '', true)"
+
+      # _service.pattern
+      - '(_service.pattern is defined) | ternary(_service.pattern | default(None) is string, true)'
+      - '(_service.pattern is defined) | ternary(_service.pattern | default(None) != None, true)'
+      - "(_service.pattern is defined) | ternary(_service.pattern | default(None) != '', true)"
+
+      # _service.runlevel
+      - '(_service.runlevel is defined) | ternary(_service.runlevel | default(None) is string, true)'
+      - '(_service.runlevel is defined) | ternary(_service.runlevel | default(None) != None, true)'
+      - "(_service.runlevel is defined) | ternary(_service.runlevel | default(None) != '', true)"
+
+      # _service.sleep
+      - >-
+          (_service.sleep is defined) | ternary(_service.sleep | default(None) | int | string
+          == _service.sleep | default(None) | string, true)
+      - '(_service.sleep is defined) | ternary(_service.sleep | default(None) is number, true)'
+      - '(_service.sleep is defined) | ternary(_service.sleep | default(None) is integer, true)'
+      - '(_service.sleep is defined) | ternary(_service.sleep | default(None) >= 1, true)'
+
+    success_msg: 'Services are defined correctly'
+    fail_msg: 'One or more services failed to validated correctly'
+    quiet: '{{ _svm_quiet_assert }}'
+  loop: '{{ _svm_services }}'
+  loop_control:
+    loop_var: '_service'
+
+- name: 'Ensure services have the desired configuration and state'
+  ansible.builtin.service:
+    name: '{{ _service.name | default(omit) }}'
+    state: '{{ _service.state | default(omit) }}'
+    enabled: '{{ _service.enabled | default(omit) }}'
+    arguments: '{{ _service.arguments | default(omit) }}'
+    pattern: '{{ _service.pattern | default(omit) }}'
+    runlevel: '{{ _service.runlevel | default(omit) }}'
+    sleep: '{{ _service.sleep | default(omit) }}'
+  become: true
+  loop: '{{ _svm_services }}'
+  loop_control:
+    loop_var: '_service'
+...

@@ -1,0 +1,54 @@
+---
+# NOTE: _svm_quiet_assert does not impact this task, as it first needs to be ensured that it actually is
+#       properly defined
+- name: 'Ensure mandatory variables, as  well as variables, which have a default value, are set (boolean)'
+  ansible.builtin.assert:
+    that:
+      - "lookup('ansible.builtin.vars', item) is defined"
+      - "lookup('ansible.builtin.vars', item) | bool | string == lookup('ansible.builtin.vars', item) | string"
+      - "lookup('ansible.builtin.vars', item) is boolean"
+    success_msg: "Variable '{{ item }}' defined properly - value: '{{ lookup('ansible.builtin.vars', item) }}'"
+    fail_msg: "Variable '{{ item }}' failed to validate"
+  loop:
+    - '_svm_quiet_assert'
+  loop_control:
+    label: 'variable: {{ item }}'
+
+# This task only ensures the arguments that are common among the supported service managers are defined correctly
+# The specific arguments for each service manager are evaluated within each's respective task file
+- name: 'Ensure service basics are defined properly'
+  ansible.builtin.assert:
+    that:
+      # _service.name
+      - '_service.name is defined'
+      - '_service.name is string'
+      - '_service.name != None'
+      - "_service.name != ''"
+
+      # ensure either enabled or state is given
+      - >-
+          _service.enabled is defined
+          or
+          _service.state is defined
+
+      # _service.enabled
+      - >-
+          (_service.enabled is defined) | ternary(_service.enabled | default(None) | bool | string
+          == _service.enabled | default(None) | string, true)
+      - '(_service.enabled is defined) | ternary(_service.enabled | default(None) is boolean, true)'
+
+      # _service.state
+      - '(_service.state is defined) | ternary(_service.state | default(None) is string, true)'
+      - '(_service.state is defined) | ternary(_service.state | default(None) != None, true)'
+      - "(_service.state is defined) | ternary(_service.state | default(None) != '', true)"
+      - >-
+        (_service.state is defined) | ternary(_service.state | default(None) in
+        ['reloaded', 'restarted', 'started', 'stopped'], true)
+
+    success_msg: 'Service basics are defined correctly'
+    fail_msg: 'One or more services failed to validated correctly'
+    quiet: '{{ _svm_quiet_assert }}'
+  loop: '{{ _svm_services }}'
+  loop_control:
+    loop_var: '_service'
+...

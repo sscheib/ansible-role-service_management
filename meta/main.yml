@@ -1,0 +1,34 @@
+---
+galaxy_info:
+  role_name: 'service_management'
+  namespace: 'sscheib'
+  author: 'Steffen Scheib'
+  description: >-
+    Simple role to manage services of different service managers without losing the flexibility of
+    using each individual module specialized on the respective service manager (systemd, sysvinit, etc.).
+  issue_tracker_url: 'https://github.com/sscheib/ansible-role-service_management/issues'
+  license: 'GPL-2.0-or-later'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '9'
+        - '8'
+
+    - name: 'Debian'
+      versions:
+        - 'bookworm'
+        - 'buster'
+
+    - name: 'OpenWrt'
+      versions:
+        - '22.03'
+        - '21.02'
+
+  galaxy_tags:
+    - 'service'
+    - 'services'
+    - 'servicemanagement'
+
+dependencies: []
+...

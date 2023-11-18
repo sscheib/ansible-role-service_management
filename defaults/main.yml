@@ -1,0 +1,4 @@
+---
+# Whether to quiet assert statements
+_def_svm_quiet_assert: false
+...

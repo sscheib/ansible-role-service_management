@@ -1,0 +1,16 @@
+---
+- name: 'Include tasks to ensure all variables are defined properly'
+  ansible.builtin.include_tasks:
+    file: 'assert.yml'
+
+- name: 'Ensure facts about the service manager used are gathered'
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - 'service_mgr'
+
+- name: 'Include tasks to configure services'
+  ansible.builtin.include_tasks:
+    file: 'service_management.yml'
+...

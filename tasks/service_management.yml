@@ -1,0 +1,29 @@
+---
+- name: 'Include tasks to manage openwrt_init services'
+  ansible.builtin.include_tasks:
+    file: 'openwrt_init.yml'
+  when: >
+    hostvars[inventory_hostname].ansible_facts.service_mgr is defined
+    and hostvars[inventory_hostname].ansible_facts.service_mgr == 'openwrt_init'
+
+- name: 'Include tasks to manage systemd services'
+  ansible.builtin.include_tasks:
+    file: 'systemd.yml'
+  when: >
+    hostvars[inventory_hostname].ansible_facts.service_mgr is defined
+    and hostvars[inventory_hostname].ansible_facts.service_mgr == 'systemd'
+
+- name: 'Include tasks to manage sysvinit services'
+  ansible.builtin.include_tasks:
+    file: 'sysvinit.yml'
+  when: >
+    hostvars[inventory_hostname].ansible_facts.service_mgr is defined
+    and hostvars[inventory_hostname].ansible_facts.service_mgr == 'sysvinit'
+
+- name: 'Include tasks to manage other services which use the default service module, such as OpenRC, upstart, etc.'
+  ansible.builtin.include_tasks:
+    file: 'services.yml'
+  when: >
+    hostvars[inventory_hostname].ansible_facts.service_mgr is defined
+    and hostvars[inventory_hostname].ansible_facts.service_mgr not in ['openwrt_init', 'systemd', 'sysvinit']
+...

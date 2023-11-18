@@ -1,0 +1,62 @@
+---
+- name: 'Ensure systemd services are defined properly'
+  ansible.builtin.assert:
+    that:
+      # _service.daemon_reexec
+      - >-
+          (_service.daemon_reexec is defined) | ternary(_service.daemon_reexec | default(None) | bool | string
+          == _service.daemon_reexec | default(None) | string, true)
+      - '(_service.daemon_reexec is defined) | ternary(_service.daemon_reexec | default(None) is boolean, true)'
+
+      # _service.daemon_reload
+      - >-
+          (_service.daemon_reload is defined) | ternary(_service.daemon_reload | default(None) | bool | string
+          == _service.daemon_reload | default(None) | string, true)
+      - '(_service.daemon_reload is defined) | ternary(_service.daemon_reload | default(None) is boolean, true)'
+
+      # _service.force
+      - >-
+          (_service.force is defined) | ternary(_service.force | default(None) | bool | string
+          == _service.force | default(None) | string, true)
+      - '(_service.force is defined) | ternary(_service.force | default(None) is boolean, true)'
+
+      # _service.masked
+      - >-
+          (_service.masked is defined) | ternary(_service.masked | default(None) | bool | string
+          == _service.masked | default(None) | string, true)
+      - '(_service.masked is defined) | ternary(_service.masked | default(None) is boolean, true)'
+
+      # _service.no_block
+      - >-
+          (_service.no_block is defined) | ternary(_service.no_block | default(None) | bool | string
+          == _service.no_block | default(None) | string, true)
+      - '(_service.no_block is defined) | ternary(_service.no_block | default(None) is boolean, true)'
+
+      # _service.scope
+      - '(_service.scope is defined) | ternary(_service.scope | default(None) is string, true)'
+      - '(_service.scope is defined) | ternary(_service.scope | default(None) != None, true)'
+      - "(_service.scope is defined) | ternary(_service.scope | default(None) != '', true)"
+      - "(_service.scope is defined) | ternary(_service.scope | default(None) in ['system', 'user', 'global'], true)"
+    success_msg: 'Services are defined correctly'
+    fail_msg: 'One or more services failed to validated correctly'
+    quiet: '{{ _svm_quiet_assert }}'
+  loop: '{{ _svm_services }}'
+  loop_control:
+    loop_var: '_service'
+
+- name: 'Ensure systemd services have the desired configuration and state'
+  ansible.builtin.systemd_service:
+    name: '{{ _service.name | default(omit) }}'
+    state: '{{ _service.state | default(omit) }}'
+    enabled: '{{ _service.enabled | default(omit) }}'
+    daemon_reexec: '{{ _service.daemon_reexec | default(omit) }}'
+    daemon_reload: '{{ _service.daemon_reload | default(omit) }}'
+    force: '{{ _service.force | default(omit) }}'
+    masked: '{{ _service.masked | default(omit) }}'
+    no_block: '{{ _service.no_block | default(omit) }}'
+    scope: '{{ _service.scope | default(omit) }}'
+  become: true
+  loop: '{{ _svm_services }}'
+  loop_control:
+    loop_var: '_service'
+...

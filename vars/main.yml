@@ -1,0 +1,7 @@
+---
+# List of services to manage
+_svm_services: '{{ svm_services | mandatory }}'
+
+# Whether to quiet assert statements
+_svm_quiet_assert: '{{ svm_quiet_assert | default(_def_svm_quiet_assert) }}'
+...
