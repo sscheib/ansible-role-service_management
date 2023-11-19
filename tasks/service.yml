@@ -23,7 +23,7 @@
           == _service.sleep | default(None) | string, true)
       - '(_service.sleep is defined) | ternary(_service.sleep | default(None) is number, true)'
       - '(_service.sleep is defined) | ternary(_service.sleep | default(None) is integer, true)'
-      - '(_service.sleep is defined) | ternary(_service.sleep | default(None) >= 1, true)'
+      - '(_service.sleep is defined) | ternary(_service.sleep | default(None) | int >= 1, true)'
 
     success_msg: 'Services are defined correctly'
     fail_msg: 'One or more services failed to validated correctly'
