@@ -10,7 +10,7 @@ Currently supported service managers with a specific module:
 - `sysvinit` (not tested, but *should* work)
 - `openwrt_init`
 
-The following service managers are supported with the the `ansible.builtin.service` module:
+The following service managers are supported with the `ansible.builtin.service` module:
 - `BSD init`
 - `OpenRC`
 - `Solaris SMF`
